@@ -1,0 +1,14 @@
+@"
+# Ignorar carpetas de sistema y modulos descargados
+Modules/
+Scripts/
+
+# Ignorar archivos temporales o de backup
+*.bak
+*.tmp
+*.swp
+
+# Ignorar historial local de PSReadLine (contiene comandos pasados, info sensible)
+# Usualmente está en AppData, pero por si acaso aparece aquí:
+*.txt
+"@ | Out-File -Encoding utf8 .gitignore
