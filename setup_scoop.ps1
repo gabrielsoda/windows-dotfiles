@@ -1,76 +1,39 @@
 # setup_scoop.ps1
+$ErrorActionPreference = "Stop"
+$ScriptDir = $PSScriptRoot
+
 Write-Host "Iniciando configuración de entorno Scoop..." -ForegroundColor Cyan
 
-# 1. Instalar Scoop (si no existe)
+# 1. Instalar Scoop
 if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
     Write-Host "Instalando Scoop..."
     Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
     irm get.scoop.sh | iex
-} else {
-    Write-Host "Scoop ya está instalado." -ForegroundColor Green
 }
 
-# 2. Instalar dependencias críticas primero (Git y 7zip)
-scoop install git 7zip
+# 2. Cargar configuración externa
+$JsonPath = Join-Path $ScriptDir "scoop_apps.json"
+if (-not (Test-Path $JsonPath)) {
+    Write-Error "No se encontró scoop_apps.json en $ScriptDir"
+}
+$Config = Get-Content $JsonPath -Raw | ConvertFrom-Json
 
-# 3. Añadir Buckets
-$buckets = @("extras", "versions", "nerd-fonts", "nonportable", "games")
-$currentBuckets = scoop bucket list
-foreach ($bucket in $buckets) {
-    if ($currentBuckets -notmatch $bucket) {
-        Write-Host "Añadiendo bucket: $bucket"
-        scoop bucket add $bucket
+# 3. Restaurar Buckets
+$CurrentBuckets = scoop bucket list
+foreach ($bucket in $Config.buckets) {
+    if ($CurrentBuckets -notmatch $bucket.Name) {
+        Write-Host "Añadiendo bucket: $($bucket.Name)"
+        scoop bucket add $bucket.Name $bucket.Source
     }
 }
-
 scoop update
 
-# 4. Lista de Aplicaciones (Extraída de tu configuración)
-$apps = @(
-    "2ship2harkinian",
-    "bitwarden",
-    "calibre",
-    "camo-studio",
-    "dark",
-    "discord",
-    "ditto",
-    "epic-games-launcher",
-    "everything",
-    "fancontrol",
-    "ffmpeg",
-    "FiraCode",
-    "firefox",
-    "googlechrome",
-    "graphviz",
-    "handbrake",
-    "innounp",
-    "lightshot",
-    "obs-studio",
-    "obsidian",
-    "oh-my-posh",
-    "pandoc",
-    "powertoys",
-    "qbittorrent-enhanced",
-    "quarto",
-    "shipwright",
-    "spotify",
-    "steam",
-    "syncthing",
-    "telegram",
-    "ubisoftconnect",
-    "uv",
-    "ventoy",
-    "vlc",
-    "vscode",
-    "yt-dlp",
-    "zelda64recomp"
-)
-
-# 5. Instalación masiva
-Write-Host "Instalando aplicaciones..." -ForegroundColor Cyan
-foreach ($app in $apps) {
-    # -u evita errores si la app ya está instalada
-    scoop install $app -u
+# 4. Restaurar Apps
+Write-Host "Verificando aplicaciones..." -ForegroundColor Cyan
+foreach ($app in $Config.apps) {
+    # Instalamos usando el nombre, ignorando la versión para obtener la 'latest'
+    # Usamos -u para omitir si ya existe
+    scoop install $app.Name -u
 }
 
-Write-Host "Configuración de Scoop finalizada." -ForegroundColor Green
+Write-Host "Entorno restaurado según scoop_apps.json" -ForegroundColor Green
