@@ -347,7 +347,7 @@ Set-Alias -Name subs -Value MuxSubs
 
 
 # --- AUTO-UPDATE SCOOP CONFIG ---
-$RepoPath = "$HOME\Documents\PowerShell\" # poner ruta correcta
+$RepoPath = $PSScriptRoot
 $ScoopFile = Join-Path $RepoPath "scoop_apps.json"
 
 if (Test-Path $RepoPath) {
