@@ -343,3 +343,24 @@ function MuxSubs {
 }
 
 Set-Alias -Name subs -Value MuxSubs
+
+
+
+# --- AUTO-UPDATE SCOOP CONFIG ---
+$RepoPath = "$HOME\Documents\PowerShell\" # poner ruta correcta
+$ScoopFile = Join-Path $RepoPath "scoop_apps.json"
+
+if (Test-Path $RepoPath) {
+    $LastUpdate = if (Test-Path $ScoopFile) { (Get-Item $ScoopFile).LastWriteTime } else { [DateTime]::MinValue }
+    
+    if ((Get-Date) -gt $LastUpdate.AddDays(7)) {
+        Write-Host "Actualizando lista de apps de Scoop (Backup semanal)..." -ForegroundColor DarkGray
+        try {
+            scoop export | Out-File $ScoopFile -Encoding utf8 -Force
+            # Opcional: Auto-commit 
+            git -C $RepoPath commit -am "Auto-update: scoop apps list" | Out-Null
+        } catch {
+            Write-Host "Error actualizando backup de Scoop." -ForegroundColor Red
+        }
+    }
+}
