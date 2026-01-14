@@ -9,9 +9,10 @@
 
 - `scoop_apps.json`  
   Lista de aplicaciones y buckets de Scoop exportada, que se actualiza automáticamente cada semana.
+  > ESTO ESTÁ COMENTADO POR DEFECTO: DESCOMENTAR SI SE ESTÁ EN LA PC PRINCIPAL.
 
 - `setup_scoop.ps1`  
-  Script de restauración que instala Scoop, añade los buckets y reinstala las apps.
+  Script de restauración que instala Scoop, añade los buckets y permite con interfaz seleccionar qué aplicaciones reinstalar de la lista.
 
 - `powershell.config.json`  
   Configuración de la política de ejecución.
@@ -21,21 +22,13 @@
 ### Flujo de auto-actualización
 
 El perfil tiene un bloque al final que verifica si `scoop_apps.json` tiene más de 7 días y, si es así, ejecuta `scoop export` y hace auto-commit.
+Por defecto está comentado. Descomentar si estás en la pc principal.
 
 ### Flujo de restauración
 
-En una PC nueva, se clona el repositorio, se ejecuta `setup_scoop.ps1` para restaurar las apps de Scoop, y se copia el perfil a `$PROFILE`.  
-Backup de configuración de PowerShell y aplicaciones de Scoop para restaurar en formateos.
+En una PC nueva, se clona el repositorio, se ejecuta `setup_scoop.ps1` para restaurar las apps de Scoop, se instalan los módulos de PowerShell ejecutando `install_dependencies.ps1` y se copia el perfil a `$PROFILE`.  
+Reiniciar terminal.
 
-
-## Estructura
-
-| Archivo | Descripción |
-|---------|-------------|
-| `Microsoft.PowerShell_profile.ps1` | Perfil de PowerShell (copiar a `$PROFILE`) |
-| `scoop_apps.json` | Lista de apps y buckets de Scoop (auto-actualiza semanalmente) |
-| `setup_scoop.ps1` | Script de restauración de Scoop |
-| `powershell.config.json` | Política de ejecución |
 
 ## Restauración
 
@@ -47,7 +40,12 @@ Backup de configuración de PowerShell y aplicaciones de Scoop para restaurar en
 
 Instala Scoop (si no existe), añade buckets y reinstala las apps listadas.
 
-### 2. Perfil de PowerShell
+### 2. Módulos PowerShell
+```powershell
+.\install_dependencies.ps1
+```
+
+### 3. Perfil de PowerShell
 
 ```powershell
 Copy-Item .\Microsoft.PowerShell_profile.ps1 $PROFILE -Force
@@ -64,7 +62,7 @@ El perfil requiere:
 - `ffmpeg`, `ffprobe`, `yt-dlp`, `uv` (en PATH, instalables via Scoop)
 - Entorno virtual con `whisperx` en `C:\Users\Gabi\whisperx-env` (para funciones `wtxt`/`wyt`)
 
-## Funciones del Perfil
+## Funciones disponibles integradas en el perfil de PowerShell
 
 ### Transcripción (WhisperX)
 
@@ -79,6 +77,7 @@ El perfil requiere:
 | `wyt <urls>` | Descarga audio, transcribe, elimina audio |
 | `wyt2 <urls>` | Igual que `wyt` pero usa nombres temporales (evita errores con títulos raros) |
 | `ytd <urls>` | Descarga video en mejor calidad (MP4) |
+| `yt <urls>` | Alternativa al anterior |
 
 ### Video (FFmpeg)
 
@@ -86,6 +85,7 @@ El perfil requiere:
 |---------|-------------|
 | `subs <video> <srt> [output] [lang] [title]` | Muxea subtítulos en video sin recodificar |
 
-## Auto-actualización
+## Notas de configuración de la auto-actualización
 
-El perfil exporta `scoop_apps.json` automáticamente si tiene más de 7 días. Hace commit si el repo está en `$HOME\Documents\PowerShell\`. Ajustar `$RepoPath` en el perfil si es otra ubicación.
+* **PC Principal (Master):** Para activar el backup semanal automático de aplicaciones, abrir `$PROFILE` y **descomentar** el bloque final ("AUTO-UPDATE SCOOP CONFIG").
+* **Ruta dinámica:** El perfil detecta automáticamente su ubicación (`$PSScriptRoot`), por lo que la auto-actualización funciona sin ajustar rutas manuales.
