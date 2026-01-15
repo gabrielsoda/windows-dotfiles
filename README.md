@@ -32,7 +32,21 @@ Reiniciar terminal.
 
 ## Restauración
 
-### 1. Scoop + Apps
+### 1. Clonar repositorio 
+**Opcional: clonar en carpeta de configuración por defecto:**
+Idealmente el repositorio debe clonarse **directamente** en la carpeta estándar de perfiles de PowerShell. Esto permite que el sistema cargue el perfil automáticamente sin pasos extra.
+
+```powershell
+# Asegura que el directorio existe (o se crea)
+$TargetDir = "$HOME\Documents\PowerShell"
+New-Item -ItemType Directory -Path $TargetDir -Force
+
+# Ubica en el directorio y clona ('.' es para no crear una subcarpeta)
+Set-Location $TargetDir
+git clone https://github.com/gabrielsoda/windows-dotfiles.git .
+```
+
+### 2. Scoop + Apps
 
 ```powershell
 .\setup_scoop.ps1
@@ -40,12 +54,13 @@ Reiniciar terminal.
 
 Instala Scoop (si no existe), añade buckets y reinstala las apps listadas.
 
-### 2. Módulos PowerShell
+### 3. Módulos PowerShell
+
 ```powershell
 .\install_dependencies.ps1
 ```
 
-### 3. Perfil de PowerShell
+### 4. Perfil de PowerShell
 
 ```powershell
 Copy-Item .\Microsoft.PowerShell_profile.ps1 $PROFILE -Force
@@ -61,7 +76,7 @@ El perfil requiere:
 - `oh-my-posh`, `Terminal-Icons`, `PSReadLine` (módulos)
 - `ffmpeg`, `ffprobe`, `yt-dlp`, `uv` (en PATH, instalables via Scoop)
 - Entorno virtual con `whisperx` en `C:\Users\Gabi\whisperx-env` (para funciones `wtxt`/`wyt`)
-
+> **Nota:** La ruta del entorno virtual está hardcodeada en `C:\Users\Gabi\whisperx-env`. Modificar la variable `$envPath` en la función `WhisperTxt` según corresponda.
 ## Funciones disponibles integradas en el perfil de PowerShell
 
 ### Transcripción (WhisperX)
@@ -85,7 +100,7 @@ El perfil requiere:
 |---------|-------------|
 | `subs <video> <srt> [output] [lang] [title]` | Muxea subtítulos en video sin recodificar |
 
-## Notas de configuración de la auto-actualización
+## Notas de configuración del script de actualización automática de las aplicaciones en scoop:
 
 * **PC Principal (Master):** Para activar el backup semanal automático de aplicaciones, abrir `$PROFILE` y **descomentar** el bloque final ("AUTO-UPDATE SCOOP CONFIG").
 * **Ruta dinámica:** El perfil detecta automáticamente su ubicación (`$PSScriptRoot`), por lo que la auto-actualización funciona sin ajustar rutas manuales.
