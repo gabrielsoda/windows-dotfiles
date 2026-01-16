@@ -11,7 +11,7 @@
 | `setup_scoop.ps1` | Script de restauración de Scoop con GUI de selección |
 | `settings.json` | Configuración de Windows Terminal (temas, fuentes, perfiles) |
 | `setup_terminal.ps1` | Script que restaura la configuración de Windows Terminal |
-| `open_dev_layout.ps1` | Abre Windows Terminal con layout de 3 paneles |
+| `open_dev_layout.bat` | Abre Windows Terminal con layout de 3 paneles (hotkey rápido) |
 | `install_dependencies.ps1` | Instala módulos de PowerShell requeridos |
 | `powershell.config.json` | Política de ejecución |
 
@@ -74,25 +74,25 @@ Layout resultante:
 └─────────────────┴─────────────────┘
 ```
 
-Layouts alternativos:
+### Configurar atajo de teclado (Ctrl+Alt+T)
+
+El archivo `.bat` es más rápido y estable para hotkeys que ps1. Para configurar:
+
 ```powershell
-.\open_dev_layout.ps1 -Layout columns  # 3 columnas horizontales
-.\open_dev_layout.ps1 -Layout rows     # 3 filas verticales
+# Configurar política de ejecución (solo necesario una vez)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Crear atajo con hotkey
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Dev Layout.lnk")
+$Shortcut.TargetPath = "$HOME\Documents\PowerShell\open_dev_layout.bat"
+$Shortcut.WindowStyle = 7  # Minimized
+$Shortcut.Hotkey = "Ctrl+Alt+T"  # Modificar a gusto
+$Shortcut.Save()
 ```
 
-### Atajo de teclado (opcional)
+Abrirá el layout de 3 paneles desde cualquier lugar.
 
-Para crear un atajo con hotkey:
-
-1. Click derecho en `open_dev_layout.ps1` → Crear acceso directo
-2. Mover el acceso directo a `shell:startup` o al escritorio
-3. Click derecho en el acceso directo → Propiedades
-4. En "Destino", poner:
-   ```
-   pwsh -WindowStyle Hidden -File "C:\Users\Gabi\Documents\PowerShell\open_dev_layout.ps1"
-   ```
-5. En "Tecla de método abreviado", asignar combinación (ej: `Ctrl+Alt+T`)
-6. Aceptar
 
 ## Funciones del perfil
 
