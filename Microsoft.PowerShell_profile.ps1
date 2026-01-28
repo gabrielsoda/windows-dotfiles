@@ -2,7 +2,7 @@ oh-my-posh init pwsh | Invoke-Expression
 
 (& uv generate-shell-completion powershell) | Out-String | Invoke-Expression
 (& uvx --generate-shell-completion powershell) | Out-String | Invoke-Expression
-
+Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 #Terminal Icons
 Import-Module Terminal-Icons
@@ -405,20 +405,20 @@ function MuxSubs {
 Set-Alias -Name subs -Value MuxSubs
 
 # --- AUTO-UPDATE SCOOP CONFIG ---
-# $RepoPath = $PSScriptRoot
-# $ScoopFile = Join-Path $RepoPath "scoop_apps.json"
+$RepoPath = $PSScriptRoot
+$ScoopFile = Join-Path $RepoPath "scoop_apps.json"
 
-# if (Test-Path $RepoPath) {
-#     $LastUpdate = if (Test-Path $ScoopFile) { (Get-Item $ScoopFile).LastWriteTime } else { [DateTime]::MinValue }
+if (Test-Path $RepoPath) {
+    $LastUpdate = if (Test-Path $ScoopFile) { (Get-Item $ScoopFile).LastWriteTime } else { [DateTime]::MinValue }
     
-#     if ((Get-Date) -gt $LastUpdate.AddDays(7)) {
-#         Write-Host "Actualizando lista de apps de Scoop (Backup semanal)..." -ForegroundColor DarkGray
-#         try {
-#             scoop export | Out-File $ScoopFile -Encoding utf8 -Force
-#             # Opcional: Auto-commit 
-#             git -C $RepoPath commit -am "Auto-update: scoop apps list" | Out-Null
-#         } catch {
-#             Write-Host "Error actualizando backup de Scoop." -ForegroundColor Red
-#         }
-#     }
-# }
+    if ((Get-Date) -gt $LastUpdate.AddDays(7)) {
+        Write-Host "Actualizando lista de apps de Scoop (Backup semanal)..." -ForegroundColor DarkGray
+        try {
+            scoop export | Out-File $ScoopFile -Encoding utf8 -Force
+            # Opcional: Auto-commit 
+            git -C $RepoPath commit -am "Auto-update: scoop apps list" | Out-Null
+        } catch {
+            Write-Host "Error actualizando backup de Scoop." -ForegroundColor Red
+        }
+    }
+}
