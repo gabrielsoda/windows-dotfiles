@@ -400,7 +400,11 @@ Set-Alias -Name subs -Value MuxSubs
 
 # Procesar clases TUIA: transcribir videos y generar notas en Obsidian
 function ProcesarClases {
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py"
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$Args
+    )
+    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @Args
 }
 Set-Alias -Name pc -Value ProcesarClases
 
