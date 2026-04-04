@@ -87,7 +87,7 @@ function WhisperTxt {
         Write-Host "Error: Debes proporcionar al menos un archivo de audio." -ForegroundColor Red
         return
     }
-    whisperx $AudioFiles --model large-v3 --output_format txt --language es
+    whisperx $AudioFiles --model large-v3 --output_format txt # --language es
     
     # Desactiva el venv después
     deactivate
@@ -404,7 +404,7 @@ function ProcesarClases {
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$Args
     )
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @Args
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @Args
 }
 Set-Alias -Name pc -Value ProcesarClases
 
@@ -414,7 +414,7 @@ function SubirClases {
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$Args
     )
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\subir_clases.py" @Args
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\subir_clases.py" @Args
 }
 Set-Alias -Name sc -Value SubirClases
 
@@ -424,7 +424,7 @@ function QuitarSilencios {
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$Args
     )
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\quitar_silencios.py" @Args
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\quitar_silencios.py" @Args
 }
 Set-Alias -Name qs -Value QuitarSilencios
 
@@ -434,7 +434,7 @@ function LimpiarClases {
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$Args
     )
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\limpiar_clases.py" @Args
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\limpiar_clases.py" @Args
 }
 Set-Alias -Name lc -Value LimpiarClases
 
@@ -444,22 +444,22 @@ function ProcesarClasesCompleto {
     $flags = @()
     if ($y) { $flags += "-y" }
 
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @flags
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @flags
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error en procesar_clases.py (código $LASTEXITCODE). Abortando pipeline." -ForegroundColor Red
         return
     }
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\quitar_silencios.py" @flags
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\quitar_silencios.py" @flags
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error en quitar_silencios.py (código $LASTEXITCODE). Abortando pipeline." -ForegroundColor Red
         return
     }
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\subir_clases.py" @flags
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\subir_clases.py" @flags
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error en subir_clases.py (código $LASTEXITCODE). Abortando pipeline." -ForegroundColor Red
         return
     }
-    uv run "C:\Users\Gabi\Proyectos\tuia-procesar-clases\limpiar_clases.py"
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\limpiar_clases.py"
 }
 Set-Alias -Name clases -Value ProcesarClasesCompleto
 
