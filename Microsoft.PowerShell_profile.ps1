@@ -440,11 +440,17 @@ Set-Alias -Name lc -Value LimpiarClases
 
 # Pipeline completo de clases TUIA: transcribir, recortar silencios, subir a YouTube y limpiar
 function ProcesarClasesCompleto {
-    param([switch]$y)
+    param(
+        [switch]$y,
+        [string]$l
+    )
     $flags = @()
     if ($y) { $flags += "-y" }
 
-    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @flags
+    $pc_flags = $flags.Clone()
+    if ($l) { $pc_flags += "-l"; $pc_flags += $l }
+
+    uv run --project "C:\Users\Gabi\Proyectos\tuia-procesar-clases" "C:\Users\Gabi\Proyectos\tuia-procesar-clases\procesar_clases.py" @pc_flags
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error en procesar_clases.py (código $LASTEXITCODE). Abortando pipeline." -ForegroundColor Red
         return
